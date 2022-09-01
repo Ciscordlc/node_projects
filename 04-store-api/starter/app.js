@@ -14,19 +14,10 @@ app.use('/api/v1/products', productsRouter)
 app.use(errorMiddleware)
 app.use(notFoundMiddleware)
 
-// routes
-app.get('/', (req, res) => {
-    res.send('<h1>Store API</h1><a href="/api/v1/products">products route</a>')
-})
-
-// products routes
-
-
 const port = process.env.PORT || 5000
 
 const start = async () => {
     try {
-        // connectDB
         await connectDB(process.env.MONGO_URI)
         app.listen(port, console.log(`Listening on port: ${port}`))
     } catch (err) {
