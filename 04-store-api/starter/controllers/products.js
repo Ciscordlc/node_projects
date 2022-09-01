@@ -13,10 +13,10 @@ const getAllProducts = async (req, res) => {
         featured, 
         company, 
         name,
+        numericFilters,
         sort,
         fields,
-        numericFilters,
-    } = req.query
+        } = req.query
     const queryObject = {}
 
     // Filters
