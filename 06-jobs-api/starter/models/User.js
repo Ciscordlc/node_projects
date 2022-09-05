@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const bcrypt = require('bcryptjs')
 
 const UserSchema = new mongoose.Schema({
     name: {
@@ -21,9 +22,16 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Must provide password'],
         minlength: [6, 'Password must be longer than 6 characters'],
-        maxlength: [12, 'Password must not exceed 12 characters'],
-        trim: true,
     },
+})
+
+UserSchema.pre('save', async function(next){ // Highly suggested to use function keyword so it'll be scoped to this document when using 'this'
+    const salt = await bcrypt.genSalt(10)
+    // salt generates random bytes with gensalt
+
+    this.password = await bcrypt.hash(this.password, salt)
+    // Hash looks for password as well as salt, gens password
+    // Always hash passwords and never store passwords as string
 })
 
 module.exports = mongoose.model('User', UserSchema)
