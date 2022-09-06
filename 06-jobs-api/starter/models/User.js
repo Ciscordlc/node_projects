@@ -26,6 +26,7 @@ const UserSchema = new mongoose.Schema({
     },
 })
 
+// mongoosejs.com/docs/middleware.html#pre
 UserSchema.pre('save', async function (next) { // Highly suggested to use function keyword so it'll be scoped to this document when using 'this'
     const salt = await bcrypt.genSalt(10)
     // salt generates random bytes with gensalt
@@ -35,6 +36,7 @@ UserSchema.pre('save', async function (next) { // Highly suggested to use functi
     // Always hash passwords and never store passwords as string
 })
 
+// mongoosejs.com/docs/guide.html#methods
 UserSchema.methods.createJWT = function () {
     return jwt.sign({ userID: this._id, name: this.name }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_LIFETIME })
 }
