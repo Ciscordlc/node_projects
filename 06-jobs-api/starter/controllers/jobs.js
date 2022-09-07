@@ -9,15 +9,15 @@ const getAllJobs = async (req, res) => {
 }
 
 const getJob = async (req, res) => {
-    const { 
-        user: { userID }, 
-        params: { id: jobID } 
+    const {
+        user: { userID },
+        params: { id: jobID }
     } = req
 
     const job = await Job.findOne({ _id: jobID, createdBy: userID })
 
     if (!job) {
-        throw new NotFoundError('Job not found')
+        throw new NotFoundError(`No job with id: ${jobID}`)
     }
 
     res.status(StatusCodes.OK).json(job)
@@ -30,10 +30,10 @@ const createJob = async (req, res) => {
 }
 
 const updateJob = async (req, res) => {
-    const { 
+    const {
         body: { company, position },
-        user: { userID }, 
-        params: { id: jobID } 
+        user: { userID },
+        params: { id: jobID }
     } = req
 
     if (company === '' || position === '') { // Checking if company or position are empty string values as opposed to if they are null values
@@ -44,24 +44,24 @@ const updateJob = async (req, res) => {
         new: true,
         runValidators: true
     })
-    
+
     if (!job) {
-        throw new NotFoundError('Job not found')
+        throw new NotFoundError(`No job with id: ${jobID}`)
     }
 
     res.status(StatusCodes.OK).json({ updated: job })
 }
 
 const deleteJob = async (req, res) => {
-    const { 
-        user: { userID }, 
-        params: { id: jobID } 
+    const {
+        user: { userID },
+        params: { id: jobID }
     } = req
 
     const job = await Job.findOneAndDelete({ _id: jobID, createdBy: userID })
-    
+
     if (!job) {
-        throw new NotFoundError('Job not found')
+        throw new NotFoundError(`No job with id: ${jobID}`)
     }
 
     res.status(StatusCodes.OK).json({ deleted: job })
