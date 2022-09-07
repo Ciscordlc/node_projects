@@ -5,14 +5,17 @@ const { BadRequestError, NotFoundError } = require('../errors')
 const getAllJobs = async (req, res) => {
     const { userID } = req.user
     const jobs = await Job.find({ createdBy: userID }).sort('createdAt')
-    res.status(StatusCodes.OK).json({ count: jobs.length, jobs})
+    res.status(StatusCodes.OK).json({ count: jobs.length, jobs })
 }
 
 const getJob = async (req, res) => {
-    const { id: jobID } = req.params
-    const { userID } = req.user
+    const { 
+        user: { userID }, 
+        params: { id: jobID } 
+    } = req
 
     const job = await Job.findOne({ _id: jobID, createdBy: userID })
+
     if (!job) {
         throw new NotFoundError('Job not found')
     }
@@ -27,14 +30,21 @@ const createJob = async (req, res) => {
 }
 
 const updateJob = async (req, res) => {
-    const { id: jobID } = req.params
-    const { userID } = req.user
+    const { 
+        body: { company, position },
+        user: { userID }, 
+        params: { id: jobID } 
+    } = req
 
+    if (company === '' || position === '') { // Checking if company or position are empty string values as opposed to if they are null values
+        throw new BadRequestError('Company or Position fields cannot be empty')
+    }
 
     const job = await Job.findOneAndUpdate({ _id: jobID, createdBy: userID }, req.body, {
         new: true,
         runValidators: true
     })
+    
     if (!job) {
         throw new NotFoundError('Job not found')
     }
@@ -43,9 +53,13 @@ const updateJob = async (req, res) => {
 }
 
 const deleteJob = async (req, res) => {
-    const { id: jobID } = req.params
+    const { 
+        user: { userID }, 
+        params: { id: jobID } 
+    } = req
 
-    const job = await Job.findOneAndDelete({ _id: jobID })
+    const job = await Job.findOneAndDelete({ _id: jobID, createdBy: userID })
+    
     if (!job) {
         throw new NotFoundError('Job not found')
     }
