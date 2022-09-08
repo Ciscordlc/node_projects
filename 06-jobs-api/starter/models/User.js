@@ -6,7 +6,7 @@ const UserSchema = new mongoose.Schema({
     name: {
         type: String,
         required: [true, 'Must provide username'],
-        minlength: [5, 'Name must be longer than 5 characters'],
+        minlength: [3, 'Name must be longer than 3 characters'],
         maxlength: [50, 'Name must not exceed 50 characters'],
         trim: true,
     },
@@ -26,17 +26,11 @@ const UserSchema = new mongoose.Schema({
     },
 })
 
-// mongoosejs.com/docs/middleware.html#pre
-UserSchema.pre('save', async function (next) { // Highly suggested to use function keyword so it'll be scoped to this document when using 'this'
+UserSchema.pre('save', async function (next) {
     const salt = await bcrypt.genSalt(10)
-    // salt generates random bytes with gensalt
-
     this.password = await bcrypt.hash(this.password, salt)
-    // Hash looks for password as well as salt, gens password
-    // Always hash passwords and never store passwords as string
 })
 
-// mongoosejs.com/docs/guide.html#methods
 UserSchema.methods.createJWT = function () {
     return jwt.sign({ userID: this._id, name: this.name }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_LIFETIME })
 }
