@@ -6,13 +6,15 @@ const authenticationMiddleware = async (req, res, next) => {
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
         throw new UnauthenticatedError('Authentication invalid')
     }
-    
+
     const token = authHeader.split(' ')[1]
 
     try {
         const payload = jwt.verify(token, process.env.JWT_SECRET)
-        // Attach the user to the job route
-        req.user = { userID: payload.userID, name: payload.name }
+        req.user = {
+            userID: payload.userID, 
+            name: payload.name
+        }
         next()
     } catch (err) {
         throw new UnauthenticatedError('Authentication invalid')
