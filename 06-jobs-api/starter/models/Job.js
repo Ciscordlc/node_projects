@@ -17,12 +17,10 @@ const JobSchema = new mongoose.Schema({
         default: 'pending',
     },
     createdBy: {
-        // Ties job model with user model
         type: mongoose.Types.ObjectId,
         ref: 'User',
         required: [true, 'Must provide user']
     },
-
-}, { timestamps: true }) // timestamps shows createdAt and updatedAt properties
+}, { timestamps: true })
 
 module.exports = mongoose.model('Job', JobSchema)
